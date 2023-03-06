@@ -1,22 +1,6 @@
 import chain from './chain.json' assert { type: 'json' }
 import { configureChains, createClient, getProvider, getContract, getAccount, watchAccount, fetchSigner } from '@wagmi/core'
 import { hardhat } from '@wagmi/core/chains'
-const volta = {
-	id: 73799,
-	name: 'Volta',
-	network: 'volta',
-	nativeCurrency: {
-		decimals: 18,
-		name: 'Volta Token',
-		symbol: 'VT',
-	},
-	rpcUrls: {
-		default: { http: ['https://volta-rpc.energyweb.org/'] }
-	},
-	blockExplorers: {
-		default: { name: 'SnowTrace', url: 'https://volta-explorer.energyweb.org/' }
-	}
-}
 import { EthereumClient, modalConnectors, walletConnectProvider } from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/html'
 
@@ -27,7 +11,7 @@ const inventory = document.querySelector('#inventory .wrapper')
 const inventory_list = inventory.querySelector('ul')
 const inventory_msg = inventory.querySelector('.msg')
 
-const web3modal = setup_web3modal([volta])
+const web3modal = setup_web3modal([hardhat])
 
 const provider = getProvider({ chainId: chain.chain_id })
 

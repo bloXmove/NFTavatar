@@ -1,13 +1,13 @@
 {
 
-    "chain_id": 73799,
+    "chain_id": 31337,
 
     "walletconnect": {
         "project_id": "fcd63d4d1bfe31828610764afcf9fea2"
     },
 
     "contract": {
-        "addr": "0x164C35a105a99EA90B472139057E3f57E2246E2d",
+        "addr": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
         "abi": [
             "function cost() public view returns (uint)",
             "function mint(address _to, uint256 _mintAmount) external payable",
