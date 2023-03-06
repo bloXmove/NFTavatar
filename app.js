@@ -32,18 +32,20 @@ watchAccount(new_account => {
 
 function setup_web3modal(chains) {
 
+	const projectId = chain.walletconnect.project_id
+
 	const { provider, webSocketProvider } = configureChains(chains, [
-		walletConnectProvider({ projectId: chain.walletconnect.project_id })
+		walletConnectProvider({ projectId })
 	])
 	const wagmi_client = createClient({
 		autoConnect: true,
-		connectors: modalConnectors({ chains }),
+		connectors: modalConnectors({ projectId, version: 2, chains }),
 		provider,
 		webSocketProvider
 	})
 	const ethereum_client = new EthereumClient(wagmi_client, chains)
 	return new Web3Modal({
-		projectId: chain.walletconnect.project_id,
+		projectId,
 		themeMode: 'light',
 		themeColor: 'green'
 	}, ethereum_client)
