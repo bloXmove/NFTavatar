@@ -1,7 +1,7 @@
 import chain from './chain.json' assert { type: 'json' }
 import { configureChains, createClient, getProvider, getContract, getAccount, watchAccount, fetchSigner } from '@wagmi/core'
 import { hardhat } from '@wagmi/core/chains'
-import { EthereumClient, modalConnectors, walletConnectProvider } from '@web3modal/ethereum'
+import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/html'
 
 const btn_mint = document.getElementById('mint')
@@ -35,11 +35,11 @@ function setup_web3modal(chains) {
 	const projectId = chain.walletconnect.project_id
 
 	const { provider, webSocketProvider } = configureChains(chains, [
-		walletConnectProvider({ projectId })
+		w3mProvider({ projectId })
 	])
 	const wagmi_client = createClient({
 		autoConnect: true,
-		connectors: modalConnectors({ projectId, version: 2, chains }),
+		connectors: w3mConnectors({ projectId, version: 2, chains }),
 		provider,
 		webSocketProvider
 	})
@@ -47,7 +47,9 @@ function setup_web3modal(chains) {
 	return new Web3Modal({
 		projectId,
 		themeMode: 'light',
-		themeColor: 'green'
+		themeVariables: {
+			'--w3m-accent-color': '#4C986D'
+		}
 	}, ethereum_client)
 
 }
