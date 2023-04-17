@@ -6,11 +6,15 @@ async function main() {
 
 	console.log('Account balance:', ethers.utils.formatUnits(await owner.getBalance()))
 
-	const NFTicketAvatar = await ethers.getContractFactory('NFTicketAvatar')
-	const contract = await upgrades.deployProxy(NFTicketAvatar, ['NFTicketAvatar', 'BLXMNFT', 'http://localhost:8080/ipfs/'], { kind: 'uups', initializer: 'initialize' })
-	// const contract = await upgrades.upgradeProxy('0x0', NFTicketAvatar)
+	const Amulets = await ethers.getContractFactory('BLXMAvatarAmulets')
+	const amulets = await upgrades.deployProxy(Amulets, ['http://127.0.0.1:8080/ipfs/amulets/{id}.json'], { kind: 'uups', initializer: 'initialize' })
 
-	console.log('NFTicketAvatar address:', contract.address)
+	const Avatars = await ethers.getContractFactory('NFTicketAvatar')
+	const avatars = await upgrades.deployProxy(Avatars, ['NFTicketAvatar', 'BLXMNFT', 'http://127.0.0.1:8080/ipfs/', amulets.address], { kind: 'uups', initializer: 'initialize' })
+	// const cc = await upgrades.upgradeProxy('0x0', CC)
+
+	console.log('BLXMAvatarAmulets address:', amulets.address)
+	console.log('NFTicketAvatar address:', avatars.address)
 
 }
 

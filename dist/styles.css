@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Inter:wght@700&family=Poppins:wght@400;600&display=swap');
+
 html, body { min-height: 100vh; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica neue, helvetica, Ubuntu, roboto, noto, segoe ui, arial, sans-serif; line-height: 1; }
 body { overflow-y: scroll; scrollbar-gutter: stable both-sides; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 body.noscroll { overflow: hidden; }
@@ -8,10 +10,11 @@ body.noscroll { overflow: hidden; }
 img { display: block; border: 0; }
 
 button {
-    display: inline-block; border: 0; margin: 0; padding: 1em 2em; border-radius: 0.5em; background: #000; color: #fff;
-    font-weight: normal; font-size: 16px; line-height: 1; cursor: pointer; transition: all 0.1s;
+    display: inline-block; border: 0; margin: 0; padding: 0.625vw 2.19vw; border-radius: 10em; background: #000; color: #fff;
+    font-family: 'Inter', sans-serif; font-weight: normal; font-size: 1.46vw; line-height: 1; cursor: pointer; transition: all 0.1s;
+    box-shadow: 6.65957px 5.32766px 9.3234px rgba(0, 0, 0, 0.1);
 }
-button:not(:disabled):hover { background: #000c; }
+button:not(:disabled):hover { transform: scale(1.1); }
 button.secondary, .btn.secondary { border: 2px solid var(--gray-8); background: none; }
 button.big, .btn.big { padding: 16px 64px; font-size: 24px; }
 button.small, .btn.small { padding: 6px 16px; font-size: 12px; }
@@ -20,6 +23,11 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 button.loading { color: #0000 !important; }
 button.loading::after { border-color: #fff; }
 button * { pointer-events: none; }
+
+#connect { position: absolute; right: 6.66vw; top: 4.69vw; background: #fff; color: #63AC11; }
+
+#mint { background: linear-gradient(to right, #2C2C2C, #585858); }
+/* #mint:hover { background: linear-gradient(to left, #2C2C2C, #585858); } */
 
 @keyframes spin {
     from { transform: rotate(0deg) translate(-50%, -50%); }
@@ -30,32 +38,85 @@ button * { pointer-events: none; }
 .loading::after { content: ''; position: absolute; z-index: 1; top: 50%; left: 50%; width: 1em; height: 1em; border: 3px solid #000; border-radius: 50%; border-right-color: transparent !important; animation: spin 0.5s linear infinite; transform-origin: left top; }
 .loading.small::after { width: 16px; height: 16px; margin: -8px 0 0 -8px; border-width: 2px; }
 
-h2 { margin: 0 0 2em; }
-p { margin: 1em 0; line-height: 1.5; }
+h1 { margin-top: 5.2vw; font-size: 3.33vw; line-height: 1.2; font-family: 'Dela Gothic One', cursive; letter-spacing: -0.01em; }
+h2 { margin: 0; }
+p { margin: 1em 0; line-height: 1.5; font-family: 'Poppins', sans-serif; }
 p:last-child { margin-bottom: 0; }
+
+h1 .green { color: #63AC11; }
+h1 .orange { color: #F47B0A; }
 
 #container { min-height: 100vh; display: grid; grid: auto 1fr auto / auto-flow; align-items: start; }
 
-header { display: flex; justify-content: center; padding: 1em 2em; border-bottom: 1px solid #0001; }
-header .wrapper { width: 100%; max-width: 800px; display: flex; align-items: center; justify-content: space-between; }
+header { display: flex; justify-content: center; }
+header .wrapper { width: 100%; display: flex; align-items: center; justify-content: space-between; }
 
 #logo { display: block; }
 
-#connect { margin-right: 1em; padding: 0.5em 1em; }
-nav ul { display: flex; gap: 1em; list-style: none; padding: 0; min-height: 40px; }
+/* #connect { margin-right: 1em; padding: 0.5em 1em; } */
+nav ul { display: flex; gap: 1em; list-style: none; padding: 0; margin: 0; }
 nav a { display: block; padding: 0.75em 1em; color: inherit; text-decoration: none; }
 nav li:not(.active) a:hover { color: green; }
 nav .active a { border-radius: 0.5em; background: #0001; cursor: default; }
 
 main { width: 100%; justify-self: center; }
+main > .wrapper { position: relative; padding: 4.69vw 6.66vw 10vw 6.66vw; background: url(img/lynx.png) right 0% / 56vw  no-repeat, url(img/radial-waves.png) 40.4% 15% / 30% no-repeat, url(img/bg.png) center/cover; }
+
+.about { max-width: 60ch; margin: 2em 0; font-size: 1vw; line-height: 1.5; }
+.about p { margin: 1em 0; }
 
 .lead { max-width: 70ch; margin: 4em auto; padding: 0 2em; line-height: 1.5; }
 
-#minting { display: flex; justify-content: center; margin: 6em 2em; }
+.sq { position: absolute; border: 4px solid #fff; will-change: transform; box-shadow: 0px 0px 25px 1px rgba(97, 171, 15, 0.8); }
+.sq1 { right: 694px; top: 346px; width: 68px; height: 68px; /* animation: 3s ease-in-out infinite alternate sq-anim; */ }
 
-#inventory { width: 100%; min-height: 280px; display: flex; justify-content: center; padding: 2em; background: #0001; box-shadow: inset 0 4px 8px #0002; }
-#inventory .wrapper { width: 100%; max-width: 800px; }
-#inventory ul { display: flex; gap: 1em; flex-wrap: wrap; justify-content: center; list-style: none; padding: 0; }
-#inventory li { font-size: 2em; line-height: 4em; width: 4em; height: 4em; border-radius: 0.25em; background: #0002; text-align: center; }
+@keyframes sq-anim {
+    from { transform: rotate(-20deg); }
+    to { transform: rotate(20deg) scale(1.1); }
+}
+
+#minting { margin-top: 3em; }
+#minting button { font-size: 2vw }
+
+#inventory { width: 100%; min-height: 280px; display: flex; justify-content: center; padding: 4em; background: #F47B09 url(img/inventory-waves.png) center center no-repeat; color: #fff; text-align: center; }
+#inventory {
+    --vp-sz: clamp(200px, 50vw, 480px);
+}
+#inventory .wrapper { position: relative; width: 100%; max-width: 800px; text-align: center; font-family: 'Poppins', sans-serif; }
+#inventory h2 { font-size: clamp(32px, 3.75vw, 3.75vw); text-transform: uppercase; letter-spacing: -0.02em; }
+#inventory #token_list { display: none; width: calc(var(--vp-sz) + 16px); position: relative; margin: 64px auto 128px; }
+#token_list .viewport { width: calc(var(--vp-sz) + 8px); height: calc(var(--vp-sz) + 8px); margin: auto; overflow: hidden; border: 4px solid #BDFF73; border-radius: 32px; }
+#inventory ul { display: flex; list-style: none; margin: 0; padding: 0; transition: transform 0.25s; }
+#inventory li { flex: 0 0 var(--vp-sz); }
+#inventory li img { width: var(--vp-sz); height: var(--vp-sz); }
+#inventory button { display: block; position: absolute; top: calc(50% - 30px); width: 60px; height: 60px; border: 16px solid #fff; border-width: 16px 16px 0 0; border-radius: 0; padding: 0 !important; background: transparent; box-shadow: none; cursor: pointer; transition: transform 0.1s; }
+#inventory .prev { left: -25%; transform: rotate(-135deg); }
+#inventory .prev:not(.disabled):hover { transform: scale(1.2) rotate(-135deg); }
+#inventory .next { right: -25%; transform: rotate(45deg); }
+#inventory .next:not(.disabled):hover { transform: scale(1.2) rotate(45deg); }
+#inventory .prev:disabled, #inventory .next:disabled { opacity: 0.5; cursor: not-allowed; }
+/* #inventory .has_tokens:not(.multiple) .prev, #inventory .has_tokens:not(.multiple) .next { opacity: 0.5; cursor: not-allowed; } */
+#inventory .msg { font-size: 22px; text-align: center; }
+
+#inventory .has_tokens #token_list { display: block; }
+#inventory .has_tokens #lock, #inventory .has_tokens .msg { display: none; }
+#inventory .has_tokens:not(.multiple) .prev, #inventory .has_tokens:not(.multiple) .next { display: none; }
+#inventory .empty #lock, #inventory .empty #token_list { display: none; }
+#inventory .locked #token_list { display: none; }
 
 footer { border-top: 1px solid #0001; padding: 1em; text-align: center; color: #000a; }
+
+@media (max-width: 800px) {
+
+    main > .wrapper { position: relative; padding: 10vw 0 0; min-height: 150vw; background: url(img/lynx-mobile.png) center 0% / 100vw no-repeat; text-align: center; }
+    #logo { display: inline-block; background: #fff; border-radius: 10em; padding: 1vw 4vw; }
+    #logo img { width: 20vw; height: auto; }
+    #connect { position: absolute; top: 110vw; left: 50%; right: auto; transform: translateX(-50%); }
+    h1 { margin: 5vw auto 105vw; font-size: 5vw; text-align: center; }
+    h1, h1 span { color: #fff !important; }
+    .about { max-width: none; text-align: center; padding: 0 5vw; }
+    .about p { font-size: 3vw; }
+    #minting { display: flex; justify-content: center; margin-bottom: 5em }
+    button { font-size: 4vw !important; padding: 2vw 5vw !important; }
+
+}

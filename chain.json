@@ -6,13 +6,22 @@
         "project_id": "fcd63d4d1bfe31828610764afcf9fea2"
     },
 
-    "contract": {
-        "addr": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-        "abi": [
-            "function cost() public view returns (uint)",
-            "function mint(address _to, uint256 _mintAmount) external payable",
-            "function tokensOfOwner(address _owner) external view returns (uint256[])"
-        ]
+    "contracts": {
+        "amulets": {
+            "addr": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+            "abi": []
+        },
+        "avatars": {
+            "addr": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+            "abi": [
+                "function cost() public view returns (uint)",
+                "function mint(address _to, uint256 _mintAmount) external payable",
+                "function tokensOfOwner(address _owner) external view returns (uint256[])",
+                "function tokenURI(uint256 tokenID) public view returns (string memory)",
+                "function totalSupply() public view returns (uint256)",
+                "function maxSupply() public view returns (uint256)"
+            ]
+        }
     }
 
 }

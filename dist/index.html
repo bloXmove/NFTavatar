@@ -6,42 +6,41 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<link rel="stylesheet" href="styles.css">
 	<link rel="modulepreload" href="app.min.js" as="script">
-	<link rel="icon" href="img/logo.svg" type="image/svg+xml" sizes="any">
+	<link rel="icon" href="img/favicon-32x32.png" type="image/svg+xml" sizes="32x32">
 </head>
 <body>
 	<div id="container">
-		<header>
-			<div class="wrapper">
-				<a id="logo" href="/"><img src="img/logo.svg" width="64" height="64"></a>
-				<nav>
-					<ul>
-						<li><w3m-core-button></w3m-core-button></li>
-						<!-- <li class="active"><a href="/">Minting</a></li> -->
-					</ul>
-				</nav>
-			</div>
-		</header>
 		<main>
-			<p class="lead">
-				BloxMove Avatar NFT is a new digital collectible that allows users to own and trade unique virtual avatars on the Ethereum blockchain.
-				Each avatar is designed with stunning visual elements and is powered by blockchain technology to ensure its authenticity and scarcity.
-				Whether you're a crypto enthusiast or just a fan of digital art, BloxMove Avatar NFT is a must-have addition to your collection.
-				* by ChatGPT 🤖
-			</p>
-			<div id="minting">
-				<button id="mint">Mint an Avatar</button>
+			<div class="wrapper">
+				<a id="logo" href="/"><img src="img/nfticket.png" width="187" height="43"></a>
+				<button id="connect">Connect Wallet</button>
+				<h1>Welcome to the<br><span class="green">Exclusive <span class="orange">NFTicket</span><br>Collection</span></h1>
+				<div class="about">
+					<p>A unique collection of exclusive, randomly generated avatars that live on the blockchain. By owning one of these avatars, you will have access to multiple exclusive utilities, rewards, and memberships powered by <strong>NFTicket</strong> and <strong>bloXmove</strong>.</p>
+					<p>But it’s not just about owning a cool avatar — the majority of the profits from the sale of the NFTs will be donated to various charities. So not only will you be part of an exclusive community, but you will also be making a difference in the world.</p>
+				</div>
+				<div id="minting">
+					<button id="mint">Mint an Avatar</button>
+				</div>
+				<!-- <div class="sq sq1"></div>
+				<div class="sq sq2"></div>
+				<div class="sq sq3"></div> -->
 			</div>
 			<div id="inventory">
 				<div class="wrapper">
 					<h2>Your Inventory</h2>
-					<ul></ul>
-					<p class="msg" hidden></p>
+					<img id="lock" src="img/lock.png" width="487" height="493" alt="" style="margin: auto;">
+					<div id="token_list">
+						<button class="prev"></button>
+						<div class="viewport">
+							<ul></ul>
+						</div>
+						<button class="next"></button>
+					</div>
+					<p class="msg"></p>
 				</div>
 			</div>
 		</main>
-		<footer>
-			f👀ter
-		</footer>
 	</div>
 	<script src="app.min.js" type="module"></script>
 </body>

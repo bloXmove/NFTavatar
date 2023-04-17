@@ -4,29 +4,45 @@ import { hardhat } from '@wagmi/core/chains'
 import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/html'
 
+const btn_connect = document.getElementById('connect')
+btn_connect.addEventListener('click', connect)
+
 const btn_mint = document.getElementById('mint')
 btn_mint.addEventListener('click', mint)
 
+let tokens = []
+
 const inventory = document.querySelector('#inventory .wrapper')
-const inventory_list = inventory.querySelector('ul')
+const inventory_list_wrapper = inventory.querySelector('#token_list')
+const inventory_list_viewport = inventory_list_wrapper.querySelector('.viewport')
+const inventory_list = inventory_list_wrapper.querySelector('ul')
+const inventory_prev = inventory_list_wrapper.querySelector('.prev')
+const inventory_next = inventory_list_wrapper.querySelector('.next')
 const inventory_msg = inventory.querySelector('.msg')
 
 const web3modal = setup_web3modal([hardhat])
 
 const provider = getProvider({ chainId: chain.chain_id })
 
-const contract = getContract({
-	address: chain.contract.addr,
-	abi: chain.contract.abi,
+const avatars_contract = getContract({
+	address: chain.contracts.avatars.addr,
+	abi: chain.contracts.avatars.abi,
 	signerOrProvider: provider
 })
 
 let account = getAccount()
 if (!account.isConnected) {
+	check_minting_is_open()
 	update_inventory()
 }
 watchAccount(new_account => {
 	account = new_account
+	if (account.isConnected) {
+		btn_connect.textContent = account.address.slice(0, 6) + '…' + account.address.slice(-4)
+	} else {
+		btn_connect.textContent = 'Connect Wallet'
+	}
+	check_minting_is_open()
 	update_inventory()
 })
 
@@ -48,10 +64,15 @@ function setup_web3modal(chains) {
 		projectId,
 		themeMode: 'light',
 		themeVariables: {
+			'--w3m-background-color': '#4C986D',
 			'--w3m-accent-color': '#4C986D'
 		}
 	}, ethereum_client)
 
+}
+
+async function connect(e) {
+	web3modal.openModal('ConnectWallet')
 }
 
 async function mint(e) {
@@ -65,8 +86,8 @@ async function mint(e) {
 
 	try {
 		const signer = await fetchSigner()
-		const cost = await contract.cost()
-		const tx = await contract.connect(signer).mint(account.address, 1, { value: cost })
+		const cost = await avatars_contract.cost()
+		const tx = await avatars_contract.connect(signer).mint(account.address, 1, { value: cost })
 		await tx.wait()
 		update_inventory()
 	} catch (e) {
@@ -83,28 +104,62 @@ async function update_inventory() {
 
 	inventory_list.innerHTML = '' // empty the list
 
-	let tokens = []
-
 	if (account.isConnected) {
-		tokens = await contract.connect(provider).tokensOfOwner(account.address)
+		tokens = await avatars_contract.connect(provider).tokensOfOwner(account.address)
 	}
 
 	if (tokens.length) {
-		inventory_msg.setAttribute('hidden', '')
+		inventory.className = 'has_tokens'
+		if (tokens.length > 1) inventory.classList.add('multiple')
 		tokens.forEach(add_token_to_inventory)
 	} else if (account.isConnected) {
+		inventory.className = 'empty'
 		inventory_msg.innerHTML = `You have no avatars in your current wallet:<br><code>${account.address}</code>`
 		inventory_msg.removeAttribute('hidden')
 	} else {
-		inventory_msg.innerHTML = 'Connect wallet to view your inventory.'
-		inventory_msg.removeAttribute('hidden')
+		inventory.className = 'locked'
+		inventory_msg.innerHTML = '<b>Connect wallet</b><br>to view your inventory'
 	}
 
 	inventory.classList.remove('loading')
+
+	update_arrows_state()
 }
 
-function add_token_to_inventory(token_id) {
+async function add_token_to_inventory(token_id) {
 	const li = document.createElement('li')
-	li.innerHTML = Number(token_id)
+	// const uri = await avatars_contract.connect(provider).tokenURI(token_id)
+	// const metadata = await (await fetch(uri)).json()
+	// li.innerHTML = `<img src="${metadata.image}" width="480" height="480">`
+	li.innerHTML = `<img src="/img/avatars/${Math.ceil(Math.random() * 4)}.jpg" width="480" height="480">`
 	inventory_list.appendChild(li)
 }
+
+async function check_minting_is_open() {
+	const total_supply = await avatars_contract.connect(provider).totalSupply()
+	const max_supply = await avatars_contract.connect(provider).maxSupply()
+	if (total_supply == max_supply) {
+		btn_mint.disabled = true
+		btn_mint.textContent = 'All tokens are minted.'
+	}
+}
+
+// inventory scroller:
+
+let curr_inventory_scroll_pos = 0
+let inventory_scroll_step = parseInt(getComputedStyle(inventory_list_viewport)['width']) - 8
+
+async function scroll_inventory(dir) {
+	// inventory_scroll_step = parseInt(getComputedStyle(inventory_list_viewport)['width']) + 32
+	curr_inventory_scroll_pos += dir == 'left' ? inventory_scroll_step : -inventory_scroll_step
+	inventory_list.style.transform = `translateX(${curr_inventory_scroll_pos}px)`
+	update_arrows_state()
+}
+
+function update_arrows_state() {
+	inventory_prev.disabled = curr_inventory_scroll_pos == 0
+	inventory_next.disabled = curr_inventory_scroll_pos == (tokens.length - 1) * -inventory_scroll_step
+}
+
+inventory_prev.addEventListener('click', e => scroll_inventory('left'))
+inventory_next.addEventListener('click', e => scroll_inventory('right'))
