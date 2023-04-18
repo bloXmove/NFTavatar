@@ -49,7 +49,7 @@ contract NFTicketAvatar is UUPSUpgradeable, ERC721EnumerableUpgradeable, Ownable
 		setCost(0.05 ether);
 		setMaxMintAmount(1);
 
-		setOnlyWhitelisted(true);
+		setOnlyWhitelisted(false);
 		setPerWhitelistedAddressLimit(3);
 
 		pause(false);
@@ -64,18 +64,18 @@ contract NFTicketAvatar is UUPSUpgradeable, ERC721EnumerableUpgradeable, Ownable
 
 		if (paused) revert MintingIsPaused();
 
-		require(_mintAmount > 0);
-		require(_mintAmount <= maxMintAmount);
+		require(_mintAmount > 0, 'mint amount is zero');
+		require(_mintAmount <= maxMintAmount, 'mint amount exceeds limit');
 
 		uint256 supply = totalSupply();
-		require(supply + _mintAmount <= maxSupply);
+		require(supply + _mintAmount <= maxSupply, 'max supply is reached');
 
 		if (msg.sender != owner()) {
 			if (onlyWhitelisted) {
-				require(whitelisted[msg.sender] == true);
-				require(balanceOf(msg.sender) + _mintAmount <= perWhitelistedAddressLimit);
+				require(whitelisted[msg.sender] == true, 'not whitelisted');
+				require(balanceOf(msg.sender) + _mintAmount <= perWhitelistedAddressLimit, 'per address limit exceeded');
 			}
-			require(msg.value >= cost * _mintAmount);
+			require(msg.value >= cost * _mintAmount, 'not enough value sent');
 		}
 
 		for (uint256 i; i < _mintAmount; ) {
@@ -152,8 +152,8 @@ contract NFTicketAvatar is UUPSUpgradeable, ERC721EnumerableUpgradeable, Ownable
 		perWhitelistedAddressLimit = _newPerWhitelistedAddressLimit;
 	}
 
-	function pause(bool _state) public onlyOwner {
-		paused = _state;
+	function pause(bool _newState) public onlyOwner {
+		paused = _newState;
 	}
 
 	function setOnlyWhitelisted(bool _newState) public onlyOwner {

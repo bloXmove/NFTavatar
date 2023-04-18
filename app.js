@@ -4,6 +4,21 @@ import { hardhat } from '@wagmi/core/chains'
 import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/html'
 
+/* const volta = {
+	id: 73799,
+	name: 'Volta',
+	network: 'volta',
+	nativeCurrency: {
+		decimals: 18,
+		name: 'Volta Token',
+		symbol: 'VT'
+	},
+	rpcUrls: {
+		public: { http: ['https://volta-rpc.energyweb.org/'] },
+		default: { http: ['https://volta-rpc.energyweb.org/'] },
+	}
+} */
+
 const btn_connect = document.getElementById('connect')
 btn_connect.addEventListener('click', connect)
 
@@ -62,6 +77,14 @@ function setup_web3modal(chains) {
 	const ethereum_client = new EthereumClient(wagmi_client, chains)
 	return new Web3Modal({
 		projectId,
+		/* mobileWallets: [{
+			id: 'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96',
+			name: 'MetaMask',
+			links: {
+				native: 'metamask:',
+				universal: 'https://metamask.app.link',
+			},
+		}], */
 		themeMode: 'light',
 		themeVariables: {
 			'--w3m-background-color': '#4C986D',
@@ -131,7 +154,7 @@ async function add_token_to_inventory(token_id) {
 	// const uri = await avatars_contract.connect(provider).tokenURI(token_id)
 	// const metadata = await (await fetch(uri)).json()
 	// li.innerHTML = `<img src="${metadata.image}" width="480" height="480">`
-	li.innerHTML = `<img src="/img/avatars/${Math.ceil(Math.random() * 4)}.jpg" width="480" height="480">`
+	li.innerHTML = `<img src="http://127.0.0.1:8080/img/avatars/${Math.ceil(Math.random() * 4)}.jpg" width="480" height="480">`
 	inventory_list.appendChild(li)
 }
 
@@ -146,19 +169,20 @@ async function check_minting_is_open() {
 
 // inventory scroller:
 
-let curr_inventory_scroll_pos = 0
-let inventory_scroll_step = parseInt(getComputedStyle(inventory_list_viewport)['width']) - 8
+let curr_inventory_pos = 0
 
 async function scroll_inventory(dir) {
-	// inventory_scroll_step = parseInt(getComputedStyle(inventory_list_viewport)['width']) + 32
-	curr_inventory_scroll_pos += dir == 'left' ? inventory_scroll_step : -inventory_scroll_step
-	inventory_list.style.transform = `translateX(${curr_inventory_scroll_pos}px)`
+	const inventory_vp_style = getComputedStyle(inventory_list_viewport)
+	const inventory_scroll_step = parseInt(inventory_vp_style['width']) - parseInt(inventory_vp_style['border-left-width']) - parseInt(inventory_vp_style['border-right-width'])
+	curr_inventory_pos += dir == 'right' ? 1 : -1
+	const offset = inventory_scroll_step * curr_inventory_pos * -1
+	inventory_list.style.transform = `translateX(${offset}px)`
 	update_arrows_state()
 }
 
 function update_arrows_state() {
-	inventory_prev.disabled = curr_inventory_scroll_pos == 0
-	inventory_next.disabled = curr_inventory_scroll_pos == (tokens.length - 1) * -inventory_scroll_step
+	inventory_prev.disabled = curr_inventory_pos == 0
+	inventory_next.disabled = curr_inventory_pos == (tokens.length - 1)
 }
 
 inventory_prev.addEventListener('click', e => scroll_inventory('left'))

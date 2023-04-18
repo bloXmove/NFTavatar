@@ -13,6 +13,8 @@ async function main() {
 	const avatars = await upgrades.deployProxy(Avatars, ['NFTicketAvatar', 'BLXMNFT', 'http://127.0.0.1:8080/ipfs/', amulets.address], { kind: 'uups', initializer: 'initialize' })
 	// const cc = await upgrades.upgradeProxy('0x0', CC)
 
+	await amulets.setAvatarsContractAddress(avatars.address)
+
 	console.log('BLXMAvatarAmulets address:', amulets.address)
 	console.log('NFTicketAvatar address:', avatars.address)
 
