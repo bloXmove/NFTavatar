@@ -46,10 +46,13 @@ contract BloXmoveQRQuest is Ownable {
 
 		require(ownership[msg.sender] == 0);
 
-        Ticket memory ticket = NFTicketContract.mintNFTicket(msg.sender, getTicketParams(msg.sender));
+		uint256 rand_id = (block.prevrandao % TOKEN_COUNT) + 1; // random token ID between 1 and TOKEN_COUNT
+		string memory uri = string(abi.encodePacked(baseURI, rand_id.toString(), '.json'));
+
+        Ticket memory ticket = NFTicketContract.mintNFTicket(msg.sender, getTicketParams(msg.sender, uri));
 		ownership[msg.sender] = ticket.ticketID;
 		token2wallet[ticket.ticketID] = msg.sender;
-		tokenIdMap[ticket.ticketID] = (block.prevrandao % TOKEN_COUNT) + 1; // random token ID between 1 and TOKEN_COUNT
+		tokenIdMap[ticket.ticketID] = rand_id;
 
 		BloXmoveTestToken(erc20_token).mint(msg.sender, 100 ether); // mint some test tokens to play with
 
