@@ -11,18 +11,18 @@ interface IDemoServiceContract {
 
 contract QRQuest is Ownable {
 
-    using Strings for uint256;
+	using Strings for uint256;
 
 	string public baseURI;
 
-    uint256 constant TOKEN_COUNT = 8;
+	uint256 constant TOKEN_COUNT = 8;
 
 	mapping(address => uint256) public ownership;
 	mapping(uint256 => address) public token2wallet;
 	mapping(uint256 => uint256) public tokenIdMap; // NFTicket ID to local token ID
 
 	mapping(address => mapping(uint256 => bool)) public isRegistered;
-    mapping(address => uint256[]) public regs;
+	mapping(address => uint256[]) public regs;
 
 	IDemoServiceContract public DemoServiceContract;
 
@@ -44,7 +44,7 @@ contract QRQuest is Ownable {
 		uint256 rand_local_id = (block.prevrandao % TOKEN_COUNT) + 1; // random token ID in range [1..TOKEN_COUNT]
 		string memory uri = string(abi.encodePacked(baseURI, rand_local_id.toString(), '.json'));
 
-        uint256 ticketID = DemoServiceContract.mintNfticket(uri, msg.sender);
+		uint256 ticketID = DemoServiceContract.mintNfticket(uri, msg.sender);
 		ownership[msg.sender] = ticketID;
 		token2wallet[ticketID] = msg.sender;
 		tokenIdMap[ticketID] = rand_local_id;
@@ -52,16 +52,16 @@ contract QRQuest is Ownable {
 	}
 
 	function register(uint256 id) external { // register an attendance
-        require(id > 0);
+		require(id > 0);
 		if (!isRegistered[msg.sender][id]) {
 			isRegistered[msg.sender][id] = true;
-            regs[msg.sender].push(id);
+			regs[msg.sender].push(id);
 		}
 	}
 
-    function getAllRegs(address wallet) external view returns (uint256[] memory) {
-        return regs[wallet];
-    }
+	function getAllRegs(address wallet) external view returns (uint256[] memory) {
+		return regs[wallet];
+	}
 
 	function tokenURI(uint256 tokenID) public view virtual returns (string memory) {
 		require(tokenIdMap[tokenID] > 0, 'URI query for nonexistent token');
@@ -84,7 +84,7 @@ contract QRQuest is Ownable {
 
 	// only owner
 
-    function setBaseURI(string memory _newBaseURI) public onlyOwner {
+	function setBaseURI(string memory _newBaseURI) public onlyOwner {
 		baseURI = _newBaseURI;
 	}
 
