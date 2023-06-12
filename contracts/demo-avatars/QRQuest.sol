@@ -4,13 +4,12 @@ pragma solidity ^0.8.0;
 
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
-// import './BloXmoveTestToken.sol';
+
+// import 'hardhat/console.sol';
 
 interface IDemoServiceContract {
-	function mintNfticket(address user, string calldata URI) external returns(uint256);
+	function mintNfticket(string calldata URI, address user) external returns(uint256);
 }
-
-error MintingIsPaused();
 
 contract QRQuest is Ownable {
 
@@ -25,15 +24,9 @@ contract QRQuest is Ownable {
 	mapping(address => mapping(uint256 => bool)) public registry;
 	mapping(address => uint256) public registered;
 
-	mapping(address => uint256) public balance;
-
 	IDemoServiceContract public DemoServiceContract;
-	// address public erc20_token;
 
 	uint256 constant TOKEN_COUNT = 8;
-
-	event TopUp(address indexed wallet, uint256 amount);
-	event Withdraw(address indexed wallet, uint256 amount);
 
 	constructor(
 		string memory _initBaseURI,
@@ -47,17 +40,16 @@ contract QRQuest is Ownable {
 
 	function mint() external {
 
-		require(ownership[msg.sender] == 0);
+		require(ownership[msg.sender] == 0, 'already minted');
 
 		uint256 rand_local_id = (block.prevrandao % TOKEN_COUNT) + 1; // random token ID in range [1..TOKEN_COUNT]
 		string memory uri = string(abi.encodePacked(baseURI, rand_local_id.toString(), '.json'));
 
-        uint256 ticketID = DemoServiceContract.mintNfticket(msg.sender, uri);
+        // uint256 ticketID = DemoServiceContract.mintNfticket(uri, msg.sender);
+		uint256 ticketID = 1;
 		ownership[msg.sender] = ticketID;
 		token2wallet[ticketID] = msg.sender;
 		tokenIdMap[ticketID] = rand_local_id;
-
-		// BloXmoveTestToken(erc20_token).mint(msg.sender, 100 ether); // mint some test tokens to play with
 
 	}
 
@@ -81,34 +73,10 @@ contract QRQuest is Ownable {
 
 	function level(address wallet) public view returns (uint256) {
 		uint256 reg_count = registered[wallet];
-		if (reg_count < 2) return 0;
-		else if (reg_count < 4) return 1;
+		if (reg_count < 3) return 1;
 		else if (reg_count < 6) return 2;
 		else return 3;
 	}
-
-	/* function topup(uint256 amount) external {
-		BloXmoveTestToken(erc20_token).transferFrom(msg.sender, address(this), amount);
-		balance[msg.sender] += amount;
-		emit TopUp(msg.sender, amount);
-	}
-
-	function withdraw(uint256 amount) external {
-		transferERC20(msg.sender, amount);
-		emit Withdraw(msg.sender, amount);
-	}
-
-	function transferERC20(address to, uint256 amount) public {
-		require(amount <= balance[msg.sender]);
-		balance[msg.sender] -= amount;
-		BloXmoveTestToken(erc20_token).transfer(to, amount);
-	} */
-
-	// only owner
-
-	/* function setERC20address(address addr) external onlyOwner {
-		erc20_token = addr;
-	} */
 
 	function setBaseURI(string memory _newBaseURI) public onlyOwner {
 		baseURI = _newBaseURI;
