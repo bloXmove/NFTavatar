@@ -1,11 +1,9 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: UNLICENSED
 
 pragma solidity ^0.8.0;
 
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
-
-// import 'hardhat/console.sol';
 
 interface IDemoServiceContract {
 	function mintNfticket(string calldata URI, address user) external returns(uint256);
@@ -13,28 +11,29 @@ interface IDemoServiceContract {
 
 contract QRQuest is Ownable {
 
-	using Strings for uint256;
+    using Strings for uint256;
 
 	string public baseURI;
+
+    uint256 constant TOKEN_COUNT = 8;
 
 	mapping(address => uint256) public ownership;
 	mapping(uint256 => address) public token2wallet;
 	mapping(uint256 => uint256) public tokenIdMap; // NFTicket ID to local token ID
 
-	mapping(address => mapping(uint256 => bool)) public registry;
-	mapping(address => uint256) public registered;
+	mapping(address => mapping(uint256 => bool)) public isRegistered;
+    mapping(address => uint256[]) public regs;
 
 	IDemoServiceContract public DemoServiceContract;
-
-	uint256 constant TOKEN_COUNT = 8;
 
 	constructor(
 		string memory _initBaseURI,
 		IDemoServiceContract demo_contract_addr
 	) Ownable() {
 		setBaseURI(_initBaseURI);
-		DemoServiceContract = demo_contract_addr;
+		setDemoServiceContractAddr(demo_contract_addr);
 	}
+
 
 	// public
 
@@ -45,7 +44,7 @@ contract QRQuest is Ownable {
 		uint256 rand_local_id = (block.prevrandao % TOKEN_COUNT) + 1; // random token ID in range [1..TOKEN_COUNT]
 		string memory uri = string(abi.encodePacked(baseURI, rand_local_id.toString(), '.json'));
 
-		uint256 ticketID = DemoServiceContract.mintNfticket(uri, msg.sender);
+        uint256 ticketID = DemoServiceContract.mintNfticket(uri, msg.sender);
 		ownership[msg.sender] = ticketID;
 		token2wallet[ticketID] = msg.sender;
 		tokenIdMap[ticketID] = rand_local_id;
@@ -53,11 +52,16 @@ contract QRQuest is Ownable {
 	}
 
 	function register(uint256 id) external { // register an attendance
-		if (!registry[msg.sender][id]) {
-			registry[msg.sender][id] = true;
-			registered[msg.sender]++;
+        require(id > 0);
+		if (!isRegistered[msg.sender][id]) {
+			isRegistered[msg.sender][id] = true;
+            regs[msg.sender].push(id);
 		}
 	}
+
+    function getAllRegs(address wallet) external view returns (uint256[] memory) {
+        return regs[wallet];
+    }
 
 	function tokenURI(uint256 tokenID) public view virtual returns (string memory) {
 		require(tokenIdMap[tokenID] > 0, 'URI query for nonexistent token');
@@ -71,14 +75,21 @@ contract QRQuest is Ownable {
 	}
 
 	function level(address wallet) public view returns (uint256) {
-		uint256 reg_count = registered[wallet];
+		uint256 reg_count = regs[wallet].length;
 		if (reg_count < 3) return 1;
 		else if (reg_count < 6) return 2;
 		else return 3;
 	}
 
-	function setBaseURI(string memory _newBaseURI) public onlyOwner {
+
+	// only owner
+
+    function setBaseURI(string memory _newBaseURI) public onlyOwner {
 		baseURI = _newBaseURI;
+	}
+
+	function setDemoServiceContractAddr(IDemoServiceContract addr) public onlyOwner {
+		DemoServiceContract = addr;
 	}
 
 }
