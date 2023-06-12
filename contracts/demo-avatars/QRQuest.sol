@@ -45,8 +45,7 @@ contract QRQuest is Ownable {
 		uint256 rand_local_id = (block.prevrandao % TOKEN_COUNT) + 1; // random token ID in range [1..TOKEN_COUNT]
 		string memory uri = string(abi.encodePacked(baseURI, rand_local_id.toString(), '.json'));
 
-        // uint256 ticketID = DemoServiceContract.mintNfticket(uri, msg.sender);
-		uint256 ticketID = 1;
+		uint256 ticketID = DemoServiceContract.mintNfticket(uri, msg.sender);
 		ownership[msg.sender] = ticketID;
 		token2wallet[ticketID] = msg.sender;
 		tokenIdMap[ticketID] = rand_local_id;
