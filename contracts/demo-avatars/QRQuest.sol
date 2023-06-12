@@ -53,10 +53,9 @@ contract QRQuest is Ownable {
 
 	function register(uint256 id) external { // register an attendance
 		require(id > 0);
-		if (!isRegistered[msg.sender][id]) {
-			isRegistered[msg.sender][id] = true;
-			regs[msg.sender].push(id);
-		}
+		require(!isRegistered[msg.sender][id], 'already registered');
+		isRegistered[msg.sender][id] = true;
+		regs[msg.sender].push(id);
 	}
 
 	function getAllRegs(address wallet) external view returns (uint256[] memory) {
