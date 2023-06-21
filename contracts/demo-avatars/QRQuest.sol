@@ -16,6 +16,7 @@ contract QRQuest is Ownable {
 	string public baseURI;
 
 	uint256 constant TOKEN_COUNT = 8;
+    uint256 constant LEADERBOARD_SIZE = 10;
 
 	mapping(address => uint256) public ownership;
 	mapping(uint256 => address) public token2wallet;
@@ -23,6 +24,13 @@ contract QRQuest is Ownable {
 
 	mapping(address => mapping(uint256 => bool)) public isRegistered;
 	mapping(address => uint256[]) public regs;
+
+    struct LeaderboardEntry {
+        address wallet;
+        uint256 score;
+    }
+
+    mapping(uint256 => LeaderboardEntry) leaderboard;
 
 	IDemoServiceContract public DemoServiceContract;
 
@@ -56,11 +64,18 @@ contract QRQuest is Ownable {
 		require(!isRegistered[msg.sender][id], 'already registered');
 		isRegistered[msg.sender][id] = true;
 		regs[msg.sender].push(id);
+        addToLeaderboard(msg.sender);
 	}
 
 	function getAllRegs(address wallet) external view returns (uint256[] memory) {
 		return regs[wallet];
 	}
+
+    function getLeaderboard() external view returns (LeaderboardEntry[LEADERBOARD_SIZE] memory ret) {
+        for (uint256 i = 0; i < LEADERBOARD_SIZE; i++) {
+            ret[i] = leaderboard[i];
+        }
+    }
 
 	function tokenURI(uint256 tokenID) public view virtual returns (string memory) {
 		require(tokenIdMap[tokenID] > 0, 'URI query for nonexistent token');
@@ -79,6 +94,51 @@ contract QRQuest is Ownable {
 		else if (reg_count < 6) return 2;
 		else return 3;
 	}
+
+
+    // private
+
+    function addToLeaderboard(address wallet) private {
+
+        uint256 score = regs[wallet].length;
+
+        if (leaderboard[LEADERBOARD_SIZE - 1].score >= score) return;
+
+        // first pass: remove the wallet from the leaderboard to eliminate dups
+        for (uint256 i = 0; i < LEADERBOARD_SIZE; i++) {
+            if (leaderboard[i].wallet == wallet) {
+
+                // shift leaderboard up
+                for (uint256 j = i; j < LEADERBOARD_SIZE; j++) {
+                    leaderboard[j] = leaderboard[j+1];
+                }
+
+                break;
+
+            }
+        }
+
+        // second pass: add the wallet to the leaderboard
+        for (uint256 i = 0; i < LEADERBOARD_SIZE; i++) {
+            if (leaderboard[i].score < score) {
+
+                // shift leaderboard down
+                LeaderboardEntry memory curr = leaderboard[i];
+                for (uint256 j = i; j < LEADERBOARD_SIZE; j++) {
+                    LeaderboardEntry memory next = leaderboard[j+1];
+                    leaderboard[j+1] = curr;
+                    curr = next;
+                }
+
+                leaderboard[i] = LeaderboardEntry(wallet, score);
+                delete leaderboard[LEADERBOARD_SIZE];
+
+                break;
+
+            }
+        }
+
+    }
 
 
 	// only owner
