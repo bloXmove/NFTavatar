@@ -154,7 +154,7 @@ async function add_token_to_inventory(token_id) {
 	// const uri = await avatars_contract.connect(provider).tokenURI(token_id)
 	// const metadata = await (await fetch(uri)).json()
 	// li.innerHTML = `<img src="${metadata.image}" width="480" height="480">`
-	li.innerHTML = `<img src="http://127.0.0.1:8080/img/avatars/${Math.ceil(Math.random() * 4)}.jpg" width="480" height="480">`
+	li.innerHTML = `<img src="/img/avatars/${Math.ceil(Math.random() * 4)}.jpg" width="480" height="480">`
 	inventory_list.appendChild(li)
 }
 
