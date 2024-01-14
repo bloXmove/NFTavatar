@@ -1,0 +1,36 @@
+Master wallet: 0xb497b41b77dC9C0279e481fe12Bb6c6CcD62683E
+Service provider wallet: 0xADb32b76C77939dAfEBc8DC287423BeF461de7dC
+
+BLXFT contract deployed at 0x7D1d1688Faff4c1CD6e6c14A33F035023295a2d1 by 0xb497b41b77dC9C0279e481fe12Bb6c6CcD62683E
+TicketLibrary deployed at 0x12e3757985169EF43eAe617139231343fa5F5188 by 0xb497b41b77dC9C0279e481fe12Bb6c6CcD62683E
+StringLib deployed at 0x68E3B5Fa445654258C9DCC0551a21800D3a4c0FF by 0xb497b41b77dC9C0279e481fe12Bb6c6CcD62683E
+
+TreasuryLib Proxy deployed to: 0xec4Ad7Bda5799a4722D24cF56d84B63e898bD107
+TreasuryLib - getAdminAddress:  0x5a9708C0db668d8Ef5Fb90B763BBb7D5db01bbA7
+TreasuryLib - getImplementationAddress:  0x005F6158f8D0cc1fdDb7Bd27C7F3810AbA0704eB
+Warning: Potentially unsafe deployment of contracts/NFTreasury.sol:NFTreasury
+
+    You are using the `unsafeAllow.external-library-linking` flag to include external libraries.
+    Make sure you have manually checked that the linked libraries are upgrade safe.
+
+NFTreasury Proxy deployed to: 0x990270E131F7D56B4c3D52a82c307D63E059387c
+NFTreasury - getAdminAddress:  0x5a9708C0db668d8Ef5Fb90B763BBb7D5db01bbA7
+NFTreasury - getImplementationAddress:  0x1880c249924260C1F307B68E30904F97a3dF2042
+Warning: Potentially unsafe deployment of contracts/NFTicket.sol:NFTicket
+
+    You are using the `unsafeAllow.external-library-linking` flag to include external libraries.
+    Make sure you have manually checked that the linked libraries are upgrade safe.
+
+NFTicket Proxy deployed to: 0xd4D12eF70000d6bBF4447b3aa8726D11D2f5c549
+NFTicket - getAdminAddress:  0x5a9708C0db668d8Ef5Fb90B763BBb7D5db01bbA7
+NFTicket - getImplementationAddress:  0xb3db9401685c212C3fB9703Cf02634f4157B3182
+
+NFTicketProcessor contract deployed at 0xC3d402F5CD05785483AC0eB593040fF0e426Df9d by 0xb497b41b77dC9C0279e481fe12Bb6c6CcD62683E
+
+NFT_AVATAR contract for the demo deployed to: 
+      0xe3BCd12eEaC7D088c603f6A5bB3450a6ff0a57C8(
+        0xd4D12eF70000d6bBF4447b3aa8726D11D2f5c549, 
+        0xe7e0952fAF9Bfbd998A5A5D93359F6829615091c,
+        0x7D1d1688Faff4c1CD6e6c14A33F035023295a2d1,
+        1
+      ) by 0xb497b41b77dC9C0279e481fe12Bb6c6CcD62683E
