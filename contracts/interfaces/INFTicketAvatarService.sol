@@ -17,5 +17,7 @@ interface INFTicketAvatarService {
         uint256 indexed amount
     );
 
-    function createIdentityFor(string calldata URI, address sendTo) external returns(uint256);
+    function createIdentityFor(address sendTo, uint tokenID, string calldata URI) external returns(uint256);
+    function tokenURI(uint256 tokenID) external view returns (string memory);
+    function setMinter(address) external;
 }

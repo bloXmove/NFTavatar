@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.7;
+pragma solidity ^0.8.0;
 
 import "../libs/SafeMath.sol";
 import "../interfaces/INFTicket.sol";
@@ -16,6 +16,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
  */
 contract NFTicketAvatarService is INFTicketAvatarService, AccessControl {
     using SafeMath for uint256;
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER");
 
     // NFTicket contract
     INFTicket NFTicketContract;
@@ -24,9 +25,13 @@ contract NFTicketAvatarService is INFTicketAvatarService, AccessControl {
     // ERC20 token to be distributed to consumers
     IERC20 ERC20Contract;
 
+
     // Number of credits on newly minted ticket
     uint256 public numCredits;
 
+    mapping(address => uint256) public ownership;
+	mapping(uint256 => string) public token2uri;
+	mapping(uint256 => uint256) public tokenIdMap; // NFTicket ID to local token ID
 
     //===================================Initializer===================================//
     constructor(
@@ -65,6 +70,12 @@ contract NFTicketAvatarService is INFTicketAvatarService, AccessControl {
         _;
     }
 
+    function setMinter(address _minter) 
+        public override
+        onlyAdmin
+    {
+        minter = _minter;
+    }
     
     //===================================Public functions===================================//
     /**
@@ -74,7 +85,11 @@ contract NFTicketAvatarService is INFTicketAvatarService, AccessControl {
      *
      * @dev Emits a TicketMinted(uint256 newTicketId, address userAddress) event, both parameters indexed
      */
-    function createIdentityFor(string calldata _URI, address user) 
+    function createIdentityFor(
+        address user, 
+        uint ticketID, 
+        string calldata _URI
+    ) 
         public override 
         onlyMinter
         returns(uint256) 
@@ -84,11 +99,24 @@ contract NFTicketAvatarService is INFTicketAvatarService, AccessControl {
 
         Ticket memory newTicket = NFTicketContract.mintNFTicket(user, ticket);
 
-        emit TicketMinted(newTicket.tokenID, user);
-        return(newTicket.tokenID);
+        ownership[msg.sender] = newTicket.tokenID;
+		token2uri[ticketID] = _URI;
+		tokenIdMap[newTicket.tokenID] = ticketID;
+
+        emit TicketMinted(ticketID, user);
+        return(newTicket.tokenID); // REAL tokenID
 
     }
 
+    function tokenURI(uint256 tokenID) public view virtual returns (string memory) 
+    {
+		require(tokenIdMap[tokenID] > 0, 'URI query for nonexistent token');
+        if(msg.sender == address(NFTicketContract)) 
+        {
+            tokenID = tokenIdMap[tokenID];
+        }
+		return(token2uri[tokenID]);
+	}
   
     //===================================Private functions===================================//
     function getTicketParams(address _recipient, uint256 companyCode, string calldata _URI)
