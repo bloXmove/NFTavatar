@@ -8,12 +8,13 @@ import "./interfaces/INFTicketAvatarService.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 
 /**
  * @title Service contract for the NFTicket avatar
  * @author Harry Behrens | bloXmove
  */
+
 contract NFTicketAvatarService is INFTicketAvatarService, AccessControl {
     using SafeMath for uint256;
     bytes32 public constant MINTER_ROLE = keccak256("MINTER");
@@ -25,13 +26,13 @@ contract NFTicketAvatarService is INFTicketAvatarService, AccessControl {
     // ERC20 token to be distributed to consumers
     IERC20 ERC20Contract;
 
-
     // Number of credits on newly minted ticket
     uint256 public numCredits;
 
     mapping(address => uint256) public ownership;
-	mapping(uint256 => string) public token2uri;
-	mapping(uint256 => uint256) public tokenIdMap; // NFTicket ID to local token ID
+    mapping(uint256 => string) public token2uri;
+    mapping(uint256 => uint256) public tokenIdMap; // NFTicket ID to local token ID
+    mapping(uint256 => uint256) public tokenIdReverseMap; // local token ID to NFTicket ID
 
     //===================================Initializer===================================//
     constructor(
@@ -63,7 +64,7 @@ contract NFTicketAvatarService is INFTicketAvatarService, AccessControl {
 
     modifier onlyTicketOwner(uint256 _ticketId) {
         require(
-            IERC721(address(NFTicketContract)).ownerOf(_ticketId) ==
+            IERC721Enumerable(address(NFTicketContract)).ownerOf(_ticketId) ==
                 _msgSender(),
             "Only ticket owner can do this"
         );
@@ -76,7 +77,7 @@ contract NFTicketAvatarService is INFTicketAvatarService, AccessControl {
     {
         minter = _minter;
     }
-    
+
     //===================================Public functions===================================//
     /**
      * @notice Mints an NFTicket to sendTo with the metadata given in _URI
@@ -94,7 +95,6 @@ contract NFTicketAvatarService is INFTicketAvatarService, AccessControl {
         onlyMinter
         returns(uint256) 
     {
-
         Ticket memory ticket = getTicketParams(user, _URI);
 
         Ticket memory newTicket = NFTicketContract.mintNFTicket(user, ticket);
@@ -102,32 +102,61 @@ contract NFTicketAvatarService is INFTicketAvatarService, AccessControl {
         ownership[msg.sender] = newTicket.tokenID;
 		token2uri[ticketID] = _URI;
 		tokenIdMap[newTicket.tokenID] = ticketID;
+        tokenIdReverseMap[ticketID] = newTicket.tokenID;
 
         emit TicketMinted(ticketID, user);
         return(newTicket.tokenID); // REAL tokenID
-
     }
 
-    function tokenURI(uint256 tokenID) public view virtual returns (string memory) 
-    {
-		require(tokenIdMap[tokenID] > 0, 'URI query for nonexistent token');
-        if(msg.sender == address(NFTicketContract)) 
-        {
+    function tokenURI(
+        uint256 tokenID
+    ) public view virtual returns (string memory) {
+        if (msg.sender == address(NFTicketContract)) {
+            require(tokenIdMap[tokenID] > 0, "URI query for nonexistent token");
             tokenID = tokenIdMap[tokenID];
         }
-		return(token2uri[tokenID]);
-	}
-  
+        return (token2uri[tokenID]);
+    }
+
+    function balanceOf(address owner) external view returns (uint256) {
+        return IERC721Enumerable(address(NFTicketContract)).balanceOf(owner);
+    }
+
+    function ownerOf(uint256 tokenId) external view returns (address) {
+        uint256 ticketId = tokenIdReverseMap[tokenId];
+
+        return IERC721Enumerable(address(NFTicketContract)).ownerOf(ticketId);
+    }
+
+    function totalSupply() external view returns (uint256) {
+        return IERC721Enumerable(address(NFTicketContract)).totalSupply();
+    }
+
+    function tokenByIndex(uint256 index) external view returns (uint256) {
+        uint256 ticketId = IERC721Enumerable(address(NFTicketContract))
+            .tokenByIndex(index);
+
+        return tokenIdMap[ticketId];
+    }
+
+    function tokenOfOwnerByIndex(
+        address owner,
+        uint256 index
+    ) public view returns (uint256) {
+        uint256 ticketId = IERC721Enumerable(address(NFTicketContract))
+            .tokenOfOwnerByIndex(owner, index);
+        return tokenIdMap[ticketId];
+    }
+
     //===================================Private functions===================================//
-    function getTicketParams(address _recipient, uint256 companyCode, string calldata _URI)
-        internal
-        view
-        onlyAdmin
-        returns (Ticket memory ticket)
-    {
+    function getTicketParams(
+        address _recipient,
+        uint256 companyCode,
+        string calldata _URI
+    ) internal view onlyAdmin returns (Ticket memory ticket) {
         ticket.tokenID = 0; // This Id will be assigned correctly in the NFTicket contract
         ticket.serviceProvider = address(this);
-        ticket.serviceDescriptor = IS_TICKET.add(companyCode) ; 
+        ticket.serviceDescriptor = IS_TICKET.add(companyCode);
         ticket.issuedTo = _recipient;
         ticket.certValue = 0;
         ticket.certValidFrom = 0;
@@ -151,14 +180,13 @@ contract NFTicketAvatarService is INFTicketAvatarService, AccessControl {
      * @dev The mintNFTicket() function in NFTicket.sol requires two parameters one of which
      * is a Ticket struct. This Ticket struct is assembled here.
      */
-    function getTicketParams(address _recipient, string calldata _URI)
-        internal
-        view
-        returns (Ticket memory ticket)
-    {
+    function getTicketParams(
+        address _recipient,
+        string calldata _URI
+    ) internal view returns (Ticket memory ticket) {
         ticket.tokenID = 0; // This Id will be assigned correctly in the NFTicket contract
         ticket.serviceProvider = address(this);
-        ticket.serviceDescriptor = IS_TICKET.add(NFTAVATAR) ; // hb230607 ticketServiceDescriptor;
+        ticket.serviceDescriptor = IS_TICKET.add(NFTAVATAR); // hb230607 ticketServiceDescriptor;
         ticket.issuedTo = _recipient;
         ticket.certValue = 0;
         ticket.certValidFrom = 0;
@@ -171,5 +199,4 @@ contract NFTicketAvatarService is INFTicketAvatarService, AccessControl {
         ticket.tokenURI = _URI;
         ticket.erc20Contract = address(ERC20Contract);
     }
-
 }
