@@ -189,7 +189,7 @@ contract NFTicketAvatarService is INFTicketAvatarService, AccessControl, ERC721E
         view 
         returns (uint256) 
     {
-        return IERC721Enumerable(address(NFTicketContract)).balanceOf(owner);
+        return super.balanceOf(owner);
     }
 
     function ownerOf(uint256 tokenId) 
@@ -200,7 +200,7 @@ contract NFTicketAvatarService is INFTicketAvatarService, AccessControl, ERC721E
     {
         uint256 ticketId = tokenIdReverseMap[tokenId];
 
-        return IERC721Enumerable(address(NFTicketContract)).ownerOf(ticketId);
+        return super.ownerOf(ticketId);
     }
 
     function totalSupply() 
@@ -209,7 +209,7 @@ contract NFTicketAvatarService is INFTicketAvatarService, AccessControl, ERC721E
         view 
         returns (uint256) 
     {
-        return IERC721Enumerable(address(NFTicketContract)).totalSupply();
+        return super.totalSupply();
     }
 
     function tokenByIndex(uint256 index) 
@@ -218,10 +218,7 @@ contract NFTicketAvatarService is INFTicketAvatarService, AccessControl, ERC721E
         view 
         returns (uint256) 
     {
-        uint256 ticketId = IERC721Enumerable(address(NFTicketContract))
-            .tokenByIndex(index);
-
-        return tokenIdMap[ticketId];
+        return super.tokenByIndex(index);
     }
 
     function tokenOfOwnerByIndex(
@@ -233,9 +230,7 @@ contract NFTicketAvatarService is INFTicketAvatarService, AccessControl, ERC721E
         view 
         returns (uint256) 
     {
-        uint256 ticketId = IERC721Enumerable(address(NFTicketContract))
-            .tokenOfOwnerByIndex(owner, index);
-        return tokenIdMap[ticketId];
+        return super.tokenOfOwnerByIndex(owner, index);
     }
 
     //===================================Private functions===================================//
