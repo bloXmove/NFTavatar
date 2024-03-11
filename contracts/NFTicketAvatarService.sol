@@ -135,7 +135,7 @@ contract NFTicketAvatarService is INFTicketAvatarService, AccessControl, ERC721E
         ownership[avatarID] = msg.sender; // @notice remember "owner" even when avatar is transferred
 		token2uri[avatarID] = _URI;
 		tokenIdMap[newTicket.tokenID] = avatarID;
-        tokenIdReverseMap[avatarID] = newTicket.tokenID;
+        tokenIdReverseMap[avatarID] = newTicket.tokenID; // TODO : this needs to become an array/wallet of NFTickets
 
         emit TicketMinted(avatarID, user);
         return(newTicket.tokenID); // REAL, i.e. NFTicket::tokenID
@@ -198,9 +198,7 @@ contract NFTicketAvatarService is INFTicketAvatarService, AccessControl, ERC721E
         view 
         returns (address) 
     {
-        uint256 ticketId = tokenIdReverseMap[tokenId];
-
-        return super.ownerOf(ticketId);
+        return super.ownerOf(tokenId);
     }
 
     function totalSupply() 
