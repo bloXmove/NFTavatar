@@ -1,4 +1,6 @@
-commit: 60fca534358e543bfa68156304a52714d06ca19c
+local commit 4944d65b1bd661e4fe2be3627411294498f56402 (HEAD -> main, tag: avatar.v1.0)
+NFTicket commit: 60fca534358e543bfa68156304a52714d06ca19c
+
 Master wallet: 0xfAFa60C002ACD6F7a3f8051b1F544e32C72f8C41
 Service provider wallet: 0xa8926f945DEd7E870E0df7359F7aA18D053Ce19A
 
